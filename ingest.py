@@ -1,28 +1,41 @@
 import os
 from dotenv import load_dotenv
-from llama_index.core import SimpleDirectoryReader
+from unstructured.partition.pdf import partition_pdf
+from llama_index.core import Document
 
-# 1. Load your secret keys (good practice to include in every main script)
 load_dotenv()
 
-def load_data():
-    print("Scanning the 'data' folder for documents...")
+def parse_and_clean_pdf(file_path):
+    print(f"Parsing {file_path} with Unstructured...")
     
-    # 2. Initialize the reader pointing to your data folder
-    reader = SimpleDirectoryReader(input_dir="./data")
+    # 1. Parse the PDF. 
+    # The "fast" strategy forces it to read the embedded text rather than using slow OCR image scanning.
+    elements = partition_pdf(filename=file_path, strategy="fast")
     
-    # 3. Extract the text and create Document objects
-    documents = reader.load_data()
+    # 2. Filter out the boilerplate noise
+    cleaned_elements = []
+    categories_to_ignore = ["Header", "Footer", "PageNumber", "PageBreak"]
     
-    print(f"Successfully loaded {len(documents)} pages/items.")
+    for element in elements:
+        # Every element detected by Unstructured has a 'category' tag
+        if element.category not in categories_to_ignore:
+            cleaned_elements.append(element)
+            
+    print(f"Original elements found: {len(elements)}")
+    print(f"Cleaned elements kept: {len(cleaned_elements)}")
+
+    # 3. Save the clean text to a file so we can visually verify it
+    output_file = "cleaned_data.txt"
+    with open(output_file, "w", encoding="utf-8") as f:
+        for element in cleaned_elements:
+            f.write(str(element) + "\n\n")
+            
+    print(f"\nSuccess! Open {output_file} in VS Code to see your clean data.")
     
-    # 4. Prove it worked by printing the first 500 characters of the first page
-    if documents:
-        print("\n--- Text Preview (First Page) ---")
-        print(documents[0].text[:500] + "...\n")
-        
-        print("--- Hidden Metadata ---")
-        print(documents[0].metadata)
+    # 4. Convert our cleaned text back into a single LlamaIndex Document for tomorrow's work
+    full_text = "\n".join([str(el) for el in cleaned_elements])
+    return [Document(text=full_text)]
 
 if __name__ == "__main__":
-    load_data()
+    # CHANGE THIS to the actual name of your PDF!
+    clean_documents = parse_and_clean_pdf("./data/sample.pdf")
