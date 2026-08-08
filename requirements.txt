@@ -47,11 +47,14 @@ griffelib==2.1.0
 grpcio==1.83.0
 grpcio-status==1.83.0
 h11==0.16.0
+h2==4.4.1
 hf-xet==1.6.0
+hpack==4.2.0
 html5lib==1.1
 httpcore==1.0.9
 httpx==0.28.1
 huggingface_hub==1.26.1
+hyperframe==6.1.0
 idna==3.18
 installer==0.7.0
 Jinja2==3.1.6
@@ -65,6 +68,7 @@ llama-index-embeddings-huggingface==0.7.0
 llama-index-embeddings-openai==0.6.0
 llama-index-instrumentation==0.5.0
 llama-index-llms-openai==0.7.10
+llama-index-vector-stores-qdrant==0.10.2
 llama-index-workflows==2.23.0
 llvmlite==0.48.0
 lxml==6.1.1
@@ -98,6 +102,7 @@ pi_heif==1.4.0
 pikepdf==10.11.0
 pillow==12.3.0
 platformdirs==4.11.0
+portalocker==3.2.0
 preshed==3.0.13
 propcache==0.5.2
 proto-plus==1.28.3
@@ -117,7 +122,9 @@ python-dotenv==1.2.2
 python-iso639==2026.7.23
 python-magic==0.4.27
 python-oxmsg==0.0.2
+pywin32==312
 PyYAML==6.0.3
+qdrant-client==1.19.0
 RapidFuzz==3.14.5
 regex==2026.7.19
 requests==2.34.2
