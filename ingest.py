@@ -2,10 +2,14 @@ import os
 from dotenv import load_dotenv
 from unstructured.partition.pdf import partition_pdf
 from llama_index.core import Document
-# NEW: Import the tool that intelligently splits text
-from llama_index.core.node_parser import SentenceSplitter 
+from llama_index.core.node_parser import SentenceSplitter
+# NEW: Import LlamaIndex HuggingFace Embedding wrapper
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 load_dotenv()
+
+# Initialize the embedding model (downloads locally)
+embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
 
 def parse_and_clean_pdf(file_path):
     print(f"Parsing {file_path} with Unstructured...")
@@ -23,29 +27,26 @@ def parse_and_clean_pdf(file_path):
 
 def chunk_documents(documents):
     print("Chunking documents into smaller pieces...")
-    
-    # 1. Configure the splitter
-    # chunk_size: Target number of tokens per chunk (500 is standard for RAG)
-    # chunk_overlap: How many tokens overlap between chunks to preserve context
     splitter = SentenceSplitter(chunk_size=500, chunk_overlap=50)
-    
-    # 2. Extract "Nodes" (LlamaIndex's official term for chunks)
     nodes = splitter.get_nodes_from_documents(documents)
+    print(f"Successfully split into {len(nodes)} chunks.")
+    return nodes
+
+def generate_embeddings_for_chunks(nodes):
+    print("Generating embeddings for PDF chunks...")
+    for node in nodes:
+        # Generate vector for each chunk's text and attach it to the node
+        node.embedding = embed_model.get_text_embedding(node.get_content())
     
-    print(f"Successfully split the document into {len(nodes)} chunks.")
-    
-    # 3. Print the first 3 chunks to physically see the overlap and size
-    print("\n--- Chunk Preview ---")
-    for i, node in enumerate(nodes[:3]):
-        print(f"\n[Chunk {i + 1}]")
-        print(node.text)
-        print("-" * 50)
-        
+    print(f"Done! Sample vector length: {len(nodes[0].embedding)}")
     return nodes
 
 if __name__ == "__main__":
-    # 1. Parse and clean the data
+    # 1. Parse and clean
     clean_docs = parse_and_clean_pdf("./data/sample.pdf")
     
-    # 2. Chunk the cleaned data
+    # 2. Chunk
     chunks = chunk_documents(clean_docs)
+    
+    # 3. Generate Embeddings
+    embedded_chunks = generate_embeddings_for_chunks(chunks)
