@@ -43,5 +43,5 @@ def search_knowledge_base(query_text, top_k=3):
 
 if __name__ == "__main__":
     # CHANGE THIS to a specific question answered inside your PDF!
-    sample_query = "What is the bandwidth of the device?"
+    sample_query = "What is the maximum acceleration range of the PhidgetAccelerometer?"
     search_knowledge_base(sample_query, top_k=3)
