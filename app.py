@@ -29,27 +29,21 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-
     /* ---------- GLOBAL ---------- */
-
     .stApp {
         background: #0b0f19;
         color: #f1f5f9;
     }
-
     .main .block-container {
         max-width: 1100px;
         padding-top: 2rem;
         padding-bottom: 7rem;
     }
 
-
     /* ---------- HEADER ---------- */
-
     .hero {
         padding: 10px 0 25px 0;
     }
-
     .hero-title {
         font-size: 38px;
         font-weight: 700;
@@ -57,16 +51,13 @@ st.markdown("""
         color: #f8fafc;
         margin-bottom: 5px;
     }
-
     .hero-subtitle {
         font-size: 16px;
         color: #94a3b8;
         margin-bottom: 20px;
     }
 
-
     /* ---------- STATUS ---------- */
-
     .status-container {
         display: inline-flex;
         align-items: center;
@@ -78,7 +69,6 @@ st.markdown("""
         font-size: 13px;
         color: #86efac;
     }
-
     .status-dot {
         width: 8px;
         height: 8px;
@@ -88,58 +78,44 @@ st.markdown("""
         box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
     }
 
-
     /* ---------- CHAT ---------- */
-
     [data-testid="stChatMessage"] {
         border-radius: 16px;
         padding: 10px 14px;
         margin-bottom: 12px;
     }
-
-    [data-testid="stChatMessage"]:has(
-        [data-testid="chatAvatarIcon-assistant"]
-    ) {
+    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
         background: rgba(30, 41, 59, 0.45);
         border: 1px solid rgba(148, 163, 184, 0.10);
     }
 
-
     /* ---------- INPUT ---------- */
-
     [data-testid="stChatInput"] {
         border-radius: 16px;
     }
-
     [data-testid="stChatInput"] textarea {
         background: #111827 !important;
         color: #f8fafc !important;
         border-radius: 16px !important;
     }
 
-
     /* ---------- SIDEBAR ---------- */
-
     section[data-testid="stSidebar"] {
         background: #080c14;
         border-right: 1px solid rgba(148, 163, 184, 0.10);
     }
-
     .sidebar-title {
         font-size: 20px;
         font-weight: 700;
         color: #f8fafc;
     }
-
     .sidebar-description {
         font-size: 13px;
         color: #94a3b8;
         line-height: 1.5;
     }
 
-
     /* ---------- CARDS ---------- */
-
     .info-card {
         background: rgba(15, 23, 42, 0.75);
         border: 1px solid rgba(148, 163, 184, 0.12);
@@ -147,23 +123,19 @@ st.markdown("""
         padding: 16px;
         margin-bottom: 12px;
     }
-
     .info-label {
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 0.8px;
         color: #64748b;
     }
-
     .info-value {
         font-size: 14px;
         color: #e2e8f0;
         margin-top: 4px;
     }
 
-
     /* ---------- SOURCE CARD ---------- */
-
     .source-card {
         background: #0f172a;
         border: 1px solid rgba(148, 163, 184, 0.12);
@@ -171,38 +143,31 @@ st.markdown("""
         padding: 12px 14px;
         margin: 7px 0;
     }
-
     .source-title {
         font-weight: 600;
         font-size: 13px;
         color: #e2e8f0;
     }
-
     .source-score {
         font-size: 11px;
         color: #64748b;
         margin-top: 3px;
     }
 
-
     /* ---------- EMPTY STATE ---------- */
-
     .empty-state {
         text-align: center;
         padding: 70px 20px 50px 20px;
     }
-
     .empty-icon {
         font-size: 52px;
         margin-bottom: 12px;
     }
-
     .empty-title {
         font-size: 24px;
         font-weight: 650;
         color: #f8fafc;
     }
-
     .empty-text {
         color: #64748b;
         font-size: 14px;
@@ -210,14 +175,11 @@ st.markdown("""
         margin: auto;
     }
 
-
     /* ---------- BUTTONS ---------- */
-
     .stButton > button {
         border-radius: 10px;
         border: 1px solid rgba(148, 163, 184, 0.15);
     }
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -234,9 +196,6 @@ load_dotenv()
 # ============================================================
 
 langfuse = get_client()
-
-# Initialize OpenInference instrumentation for LlamaIndex.
-# This automatically exports LlamaIndex traces to Langfuse.
 LlamaIndexInstrumentor().instrument()
 
 
@@ -246,13 +205,13 @@ LlamaIndexInstrumentor().instrument()
 
 @st.cache_resource(show_spinner=False)
 def load_query_engine():
-
     embed_model = HuggingFaceEmbedding(
         model_name="BAAI/bge-small-en-v1.5"
     )
 
+    # Note: Changed to a valid Groq model name
     llm = Groq(
-        model="openai/gpt-oss-20b"
+        model="llama-3.1-8b-instant"
     )
 
     client = qdrant_client.QdrantClient(
@@ -297,7 +256,6 @@ def load_query_engine():
 # ============================================================
 
 if "messages" not in st.session_state:
-
     st.session_state.messages = [
         {
             "role": "assistant",
@@ -315,40 +273,33 @@ if "messages" not in st.session_state:
 # ============================================================
 
 with st.sidebar:
-
     st.markdown(
         '<div class="sidebar-title">🤖 Support AI</div>',
         unsafe_allow_html=True
     )
-
     st.markdown(
         '<div class="sidebar-description">'
         'Enterprise knowledge assistant powered by RAG.'
         '</div>',
         unsafe_allow_html=True
     )
-
     st.divider()
 
     st.markdown("### ⚙️ System")
-
     st.markdown(
         """
         <div class="info-card">
             <div class="info-label">LLM</div>
-            <div class="info-value">GPT-OSS 20B via Groq</div>
+            <div class="info-value">Llama 3.1 8B via Groq</div>
         </div>
-
         <div class="info-card">
             <div class="info-label">Embedding Model</div>
             <div class="info-value">BGE Small EN v1.5</div>
         </div>
-
         <div class="info-card">
             <div class="info-label">Vector Database</div>
             <div class="info-value">Qdrant</div>
         </div>
-
         <div class="info-card">
             <div class="info-label">Retrieval</div>
             <div class="info-value">Top 3 semantic chunks</div>
@@ -356,11 +307,9 @@ with st.sidebar:
         """,
         unsafe_allow_html=True
     )
-
     st.divider()
 
     st.markdown("### 💡 Example Questions")
-
     example_questions = [
         "What is the refund policy?",
         "How can I reset my password?",
@@ -369,7 +318,6 @@ with st.sidebar:
     ]
 
     for question in example_questions:
-
         if st.button(
             question,
             use_container_width=True,
@@ -380,11 +328,7 @@ with st.sidebar:
 
     st.divider()
 
-    if st.button(
-        "🗑️ Clear Conversation",
-        use_container_width=True
-    ):
-
+    if st.button("🗑️ Clear Conversation", use_container_width=True):
         st.session_state.messages = [
             {
                 "role": "assistant",
@@ -394,7 +338,6 @@ with st.sidebar:
                 )
             }
         ]
-
         st.rerun()
 
 
@@ -404,21 +347,17 @@ with st.sidebar:
 
 st.html("""
     <div class="hero">
-
         <div class="hero-title">
             🤖 Customer Support Knowledge Bot
         </div>
-
         <div class="hero-subtitle">
             Ask questions about company policies, product manuals,
             and internal documentation.
         </div>
-
         <div class="status-container">
             <span class="status-dot"></span>
             Knowledge Base Connected
         </div>
-
     </div>
 """)
 
@@ -428,19 +367,12 @@ st.html("""
 # ============================================================
 
 with st.spinner("Connecting to knowledge base..."):
-
     try:
-
         query_engine = load_query_engine()
-
     except Exception as e:
-
         st.error("❌ Unable to initialize the AI system.")
-
         with st.expander("Technical details"):
-
             st.exception(e)
-
         st.stop()
 
 
@@ -449,22 +381,17 @@ with st.spinner("Connecting to knowledge base..."):
 # ============================================================
 
 if len(st.session_state.messages) == 1:
-
     st.html("""
         <div class="empty-state">
-
             <div class="empty-icon">📚</div>
-
             <div class="empty-title">
                 Ask your knowledge base
             </div>
-
             <div class="empty-text">
                 Search through your company documentation using
                 natural language. Answers are grounded in your
                 indexed documents.
             </div>
-
         </div>
 """)
 
@@ -473,66 +400,74 @@ if len(st.session_state.messages) == 1:
 # RENDER CHAT HISTORY
 # ============================================================
 
-for msg in st.session_state.messages:
-
+# Note: Added enumerate(st.session_state.messages) to define `i`
+for i, msg in enumerate(st.session_state.messages):
     with st.chat_message(
         msg["role"],
         avatar="🤖" if msg["role"] == "assistant" else "👤"
     ):
-
         st.markdown(msg["content"])
 
-        # Show retrieved sources if they exist
-        if msg["role"] == "assistant" and "sources" in msg:
+        # Show feedback buttons for all assistant messages except the first greeting
+        if msg["role"] == "assistant" and i > 0:
+            col1, col2, _ = st.columns([1, 1, 8])
+            trace_id = msg.get("trace_id")
 
+            with col1:
+                if st.button("👍", key=f"up_{i}"):
+                    if trace_id:
+                        try:
+                            langfuse.score(
+                                trace_id=trace_id,
+                                name="user_feedback",
+                                value=1,
+                                comment="Thumbs up from Streamlit UI"
+                            )
+                        except Exception:
+                            pass
+                    st.toast("Feedback recorded: 👍")
+
+            with col2:
+                if st.button("👎", key=f"down_{i}"):
+                    if trace_id:
+                        try:
+                            langfuse.score(
+                                trace_id=trace_id,
+                                name="user_feedback",
+                                value=0,
+                                comment="Thumbs down from Streamlit UI"
+                            )
+                        except Exception:
+                            pass
+                    st.toast("Feedback recorded: 👎")
+
+        if msg["role"] == "assistant" and "sources" in msg:
             with st.expander(
                 f"🔍 Retrieved Sources ({len(msg['sources'])})"
             ):
-
-                for idx, source in enumerate(
-                    msg["sources"],
-                    1
-                ):
-
-                    score = source.score
-
+                for idx, source in enumerate(msg["sources"], 1):
+                    score = source.score if source.score else 0.0
                     st.html(f"""
                         <div class="source-card">
-
                             <div class="source-title">
                                 📄 Source {idx}
                             </div>
-
                             <div class="source-score">
-                                Similarity score:
-                                {score:.4f}
+                                Similarity score: {score:.4f}
                             </div>
-
                         </div>
-""")
-
-                    st.text(
-                        source.node.get_content()
-                    )
+                    """)
+                    st.text(source.node.get_content())
 
 
 # ============================================================
 # INPUT
 # ============================================================
 
-user_input = st.chat_input(
-    "Ask something about your documents..."
-)
+user_input = st.chat_input("Ask something about your documents...")
 
-
-# Handle sidebar example question
-if (
-    "pending_question" in st.session_state
-    and not user_input
-):
-
+if "pending_question" in st.session_state and not user_input:
     user_input = st.session_state.pending_question
-
     del st.session_state.pending_question
 
 
@@ -541,158 +476,86 @@ if (
 # ============================================================
 
 if user_input:
-
-    # -------------------------
-    # User message
-    # -------------------------
-
     st.session_state.messages.append(
         {
             "role": "user",
-            "content": user_input
+            "content": user_input,
+            "trace_id": None
         }
     )
 
-    with st.chat_message(
-        "user",
-        avatar="👤"
-    ):
-
+    with st.chat_message("user", avatar="👤"):
         st.markdown(user_input)
 
-
-    # -------------------------
-    # Assistant response
-    # -------------------------
-
-    with st.chat_message(
-        "assistant",
-        avatar="🤖"
-    ):
-
-        with st.spinner(
-            "🔎 Searching knowledge base..."
-        ):
-
+    with st.chat_message("assistant", avatar="🤖"):
+        with st.spinner("🔎 Searching knowledge base..."):
             try:
-
-                response = query_engine.query(
-                    user_input
-                )
-
+                response = query_engine.query(user_input)
                 answer = response.response
+                current_trace_id = None
+
+                try:
+                    current_trace_id = langfuse.get_current_trace_id()
+                except AttributeError:
+                    current_trace_id = None
 
                 st.markdown(answer)
-
-
-                # -------------------------
-                # Retrieval metadata
-                # -------------------------
-
                 sources = response.source_nodes
 
                 if sources:
-
                     st.divider()
-
                     col1, col2 = st.columns(2)
-
+                    
                     with col1:
-
-                        st.metric(
-                            "Sources Retrieved",
-                            len(sources)
-                        )
-
+                        st.metric("Sources Retrieved", len(sources))
+                        
                     with col2:
-
-                        scores = [
-                            s.score
-                            for s in sources
-                            if s.score is not None
-                        ]
-
+                        scores = [s.score for s in sources if s.score is not None]
                         if scores:
+                            avg_score = sum(scores) / len(scores)
+                            st.metric("Avg. Similarity", f"{avg_score:.3f}")
 
-                            avg_score = (
-                                sum(scores) / len(scores)
-                            )
-
-                            st.metric(
-                                "Avg. Similarity",
-                                f"{avg_score:.3f}"
-                            )
-
-
-                    with st.expander(
-                        f"🔍 View Retrieved Sources ({len(sources)})"
-                    ):
-
-                        for idx, source in enumerate(
-                            sources,
-                            1
-                        ):
-
-                            score = source.score
-
+                    with st.expander(f"🔍 View Retrieved Sources ({len(sources)})"):
+                        for idx, source in enumerate(sources, 1):
+                            score = source.score if source.score else 0.0
                             st.html(f"""
                                 <div class="source-card">
-
                                     <div class="source-title">
                                         📄 Retrieved Chunk {idx}
                                     </div>
-
                                     <div class="source-score">
-                                        Similarity:
-                                        {score:.4f}
+                                        Similarity: {score:.4f}
                                     </div>
-
                                 </div>
-""")
+                            """)
+                            st.text(source.node.get_content())
 
-                            st.text(
-                                source.node.get_content()
-                            )
-
-
-                    # Store sources in history
                     st.session_state.messages.append(
                         {
                             "role": "assistant",
                             "content": answer,
-                            "sources": sources
+                            "sources": sources,
+                            "trace_id": current_trace_id
                         }
                     )
-
                 else:
-
                     st.session_state.messages.append(
                         {
                             "role": "assistant",
-                            "content": answer
+                            "content": answer,
+                            "trace_id": current_trace_id
                         }
                     )
-
-
             except Exception as e:
-
-                answer = (
-                    "Sorry, I encountered an error while "
-                    "searching the knowledge base."
-                )
-
+                answer = "Sorry, I encountered an error while searching the knowledge base."
                 st.error(answer)
-
-                with st.expander(
-                    "🔧 Technical details"
-                ):
-
+                with st.expander("🔧 Technical details"):
                     st.exception(e)
-
                 st.session_state.messages.append(
                     {
                         "role": "assistant",
-                        "content": answer
+                        "content": answer,
+                        "trace_id": None
                     }
                 )
 
@@ -710,8 +573,7 @@ st.markdown(
         margin-top:40px;
         padding-bottom:20px;
     ">
-        Enterprise RAG Support Assistant •
-        Qdrant + LlamaIndex + Groq
+        Enterprise RAG Support Assistant • Qdrant + LlamaIndex + Groq
     </div>
     """,
     unsafe_allow_html=True
