@@ -7,6 +7,9 @@ from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.groq import Groq
 
+from langfuse import get_client
+from openinference.instrumentation.llama_index import LlamaIndexInstrumentor
+
 
 # ============================================================
 # PAGE CONFIG
@@ -224,6 +227,17 @@ st.markdown("""
 # ============================================================
 
 load_dotenv()
+
+
+# ============================================================
+# LANGFUSE OBSERVABILITY
+# ============================================================
+
+langfuse = get_client()
+
+# Initialize OpenInference instrumentation for LlamaIndex.
+# This automatically exports LlamaIndex traces to Langfuse.
+LlamaIndexInstrumentor().instrument()
 
 
 # ============================================================
